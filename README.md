@@ -6,7 +6,7 @@
 
 RoomCraft is a browser-based interior design studio. Sketch a room, drop in furniture, and let an AI assistant restyle, resize, and arrange everything for you — in real-time 3D, down to the millimeter.
 
-<img src="src/assets/hero.png" alt="RoomCraft preview" width="820" />
+
 
 <br/>
 
@@ -105,29 +105,9 @@ export const OLLAMA_MODEL = 'llama3'
 - `Switch to top view`
 - `Remove the coffee table`
 
----
-
-## 📁 Project Structure
-
-```
-src/
-├── ai/            # AI assistant — Ollama client + offline parser
-├── components/
-│   ├── editor/    # TopBar, catalog, sidebars, AI chat, share modal
-│   ├── onboarding/# Room-setup flow
-│   ├── scene/     # 3D room, furniture, materials, lighting
-│   └── ui/        # Reusable primitives
-├── data/          # Furniture catalog, materials, style presets
-├── hooks/         # Keyboard shortcuts
-├── lib/           # Geometry, units, insights, sharing, export
-└── store/         # Zustand design store
-```
 
 ---
 
-## 📜 License
-
-Released under the [MIT License](LICENSE).
 
 <div align="center">
 
