@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__take_screenshot",
+      "PowerShell(npx tsc -b 2>&1 | Select-Object -First 60)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__fill",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__select_page",
+      "PowerShell($p = Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if \\($p\\) { Stop-Process -Id $p -Force; \"killed $p\" } else { \"nothing on 5173\" })",
+      "PowerShell(npm run *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn",
+    "magic",
+    "chrome-devtools"
+  ]
+}
