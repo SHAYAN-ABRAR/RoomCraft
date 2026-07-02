@@ -60,6 +60,26 @@ function parseComponents(text: string): FurnitureParams {
 export const OLLAMA_URL = 'http://localhost:11434'
 export const OLLAMA_MODEL = 'gemma4:31b-cloud'
 
+/**
+ * In production the browser talks to the same-origin serverless proxy
+ * (api/chat.ts → Ollama Cloud) so the assistant works for every visitor.
+ * In dev it talks straight to the local Ollama daemon.
+ */
+const USE_PROXY = import.meta.env.PROD
+export const AI_MODEL_LABEL = USE_PROXY ? OLLAMA_MODEL.replace(/-cloud$/, '') : OLLAMA_MODEL
+
+/** Availability check for the chat UI's online/offline badge. Never throws. */
+export async function probeAI(signal?: AbortSignal): Promise<boolean> {
+  try {
+    const res = USE_PROXY
+      ? await fetch('/api/chat', { signal })
+      : await fetch(`${OLLAMA_URL}/api/tags`, { signal })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 const KINDS = CATALOG.map((c) => c.kind)
 const STYLE_IDS = STYLE_PRESETS.map((s) => s.id)
 
@@ -317,21 +337,30 @@ export async function chatWithAI(
   signal?: AbortSignal,
 ): Promise<AIResult> {
   try {
-    const res = await fetch(`${OLLAMA_URL}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-      body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        stream: false,
-        format: 'json',
-        options: { temperature: 0.3 },
-        messages: [
-          { role: 'system', content: systemPrompt(context) },
-          { role: 'user', content: userText },
-        ],
-      }),
-    })
+    const messages = [
+      { role: 'system', content: systemPrompt(context) },
+      { role: 'user', content: userText },
+    ]
+    // The proxy owns model/options; the local daemon needs the full payload.
+    const res = USE_PROXY
+      ? await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal,
+          body: JSON.stringify({ messages }),
+        })
+      : await fetch(`${OLLAMA_URL}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal,
+          body: JSON.stringify({
+            model: OLLAMA_MODEL,
+            stream: false,
+            format: 'json',
+            options: { temperature: 0.3 },
+            messages,
+          }),
+        })
     if (!res.ok) throw new Error(`Ollama ${res.status}`)
     const data = await res.json()
     const parsed = JSON.parse(data.message?.content ?? '{}')

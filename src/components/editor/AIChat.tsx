@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp, Bot, Sparkles, Wifi, WifiOff, X } from 'lucide-react'
 import { useDesignStore } from '@/store/useDesignStore'
-import { chatWithAI, OLLAMA_MODEL, OLLAMA_URL } from '@/ai/ollama'
+import { AI_MODEL_LABEL, chatWithAI, probeAI } from '@/ai/ollama'
 import { executeActions } from '@/ai/execute'
 
 interface Msg {
@@ -40,14 +40,14 @@ export function AIChat() {
   const unit = useDesignStore((s) => s.unit)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Probe Ollama once on open.
+  // Probe the AI backend once on open. Generous timeout: serverless cold
+  // starts in production can take a few seconds.
   useEffect(() => {
     if (!open || online !== null) return
     const ctrl = new AbortController()
-    const t = setTimeout(() => ctrl.abort(), 1500)
-    fetch(`${OLLAMA_URL}/api/tags`, { signal: ctrl.signal })
-      .then((r) => setOnline(r.ok))
-      .catch(() => setOnline(false))
+    const t = setTimeout(() => ctrl.abort(), 5000)
+    probeAI(ctrl.signal)
+      .then(setOnline)
       .finally(() => clearTimeout(t))
     return () => ctrl.abort()
   }, [open, online])
@@ -97,7 +97,7 @@ export function AIChat() {
                     {online === false ? (
                       <><WifiOff className="h-3 w-3" /> Offline mode · built-in understanding</>
                     ) : online ? (
-                      <><Wifi className="h-3 w-3 text-[var(--color-free)]" /> {OLLAMA_MODEL}</>
+                      <><Wifi className="h-3 w-3 text-[var(--color-free)]" /> {AI_MODEL_LABEL}</>
                     ) : (
                       <>Connecting…</>
                     )}
