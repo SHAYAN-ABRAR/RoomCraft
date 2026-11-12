@@ -17,6 +17,12 @@ RoomCraft is a browser-based interior design studio. Sketch a room, drop in furn
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/license-MIT-green)](#license)
 
+<p align="center">
+  <img src="docs/media/demo.webp" width="720" alt="RoomCraft walkthrough: set the room size, add furniture, apply a style and orbit the 3D room" />
+  <br/>
+  <sub>Recorded from the <a href="https://room-craft-nu.vercel.app/">live demo</a>: set the room size, add furniture, apply a style, orbit.</sub>
+</p>
+
 </div>
 
 ---
